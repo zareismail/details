@@ -1,0 +1,33 @@
+{
+    "name": "zareismail/details",
+    "description": "A Laravel Nova tool.",
+    "keywords": [
+        "laravel",
+        "nova"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1.0",
+        "armincms/chain": "~0.1",
+        "armincms/nova-targomaan": "~0.1",
+        "superlatif/nova-tag-input": "^1.4",
+        "zareismail/nova-contracts": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zareismail\\Details\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Zareismail\\Details\\DetailsServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
