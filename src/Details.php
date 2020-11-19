@@ -17,7 +17,9 @@ class Details
     public static function moreDetailedResources(Request $request)
     {
         return Nova::authorizedResources($request)->filter(function($resource) { 
-            return in_array(Contracts\MoreDetails::class, class_implements($resource)) ;
+            $model = $resource::newModel();
+
+            return $model instanceof Contracts\MoreDetails; 
         });
     }
 }
