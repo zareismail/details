@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\{ID, Text, Number, Select, BooleanGroup, BelongsTo};
 use Armincms\Fields\{Targomaan, Chain};
 use Superlatif\NovaTagInput\Tags;
+use Zareismail\NovaContracts\Nova\Fields\SharedResources;
 use Zareismail\Details\Details;
 
 class Detail extends Resource
@@ -78,24 +79,6 @@ class Detail extends Resource
                 }   
             }),
 
-            $this->mergeWhen(static::moreDetailedResources($request)->isNotEmpty(), function() {
-                $resources = static::moreDetailedResources(app('request'))->pluck('label', 'name');
-
-                return [ 
-                    BooleanGroup::make(__('Except On The'), 'config->except')
-                        ->options($resources)
-                        ->help(__('The user never sees this on the selected pages.')),
-
-                    BooleanGroup::make(__('Only On The'), 'config->only')
-                        ->options($resources)
-                        ->help(__('The user sees this just in the selected pages.')),
-
-                    BooleanGroup::make(__('Required On The'), 'config->required')
-                        ->options($resources)
-                        ->help(__('The user forces to fill this on the selected pages.')),
-                ];
-            }),
-
             $this->mergeWhen($this->field === 'Number', function() {
                 return [ 
                     Number::make(__('Minimum Value'), 'config->rules->min')
@@ -112,6 +95,8 @@ class Detail extends Resource
                         ->onlyOnDetail(), 
                 ];
             }),
+
+            new SharedResources($request, $this),
     	];
     } 
 
@@ -122,26 +107,10 @@ class Detail extends Resource
      */
     public static function fieldOptions()
     {
-        return collect(static::newModel()::fields())->mapWithKeys(function($field) {
+        return collect(forward_static_call([static::$model, 'fields']))->mapWithKeys(function($field) {
             return [
                 $field => __(class_basename($field))
             ];
         });
-    } 
-
-    /**
-     * Return Nova's resources that need details.
-     *
-     * @param  \use Illuminate\Http\Request $request
-     * @return \Laravel\Nova\ResourceCollection
-     */
-    public static function moreDetailedResources(Request $request)
-    { 
-        return Details::moreDetailedResources($request)->map(function($resource) {
-            return [
-                'label' => $resource::label(),
-                'name' => $resource::uriKey(), 
-            ];
-        });
-    }
+    }  
 }

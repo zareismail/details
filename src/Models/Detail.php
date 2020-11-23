@@ -4,11 +4,13 @@ namespace Zareismail\Details\Models;
 
 use Illuminate\Support\Str;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\{Text, Number, Select, Boolean, DateTime, Timezone, BooleanGroup};
-use Zareismail\Details\Details;
+use Laravel\Nova\Fields\{Text, Number, Select, Boolean, DateTime, Timezone, BooleanGroup}; 
+use Zareismail\NovaContracts\Concerns\ShareableResource; 
 
 class Detail extends Model
 {     
+    use ShareableResource;
+
     /**
      * The attributes that should be cast.
      *
@@ -115,95 +117,7 @@ class Detail extends Model
                 $field->nullable();
             }
         }); 
-    }
-
-    /**
-     * Determine if the field is required for the given resources.
-     * 
-     * @param  \Laravel\Nova\Resource $resource 
-     * @return boolean             
-     */
-    public function isAvailableFor(Resource $resource)
-    {
-        return  $this->isRequiredFor($resource) || 
-                $this->isExclusiveFor($resource) || 
-                $this->isNotExcludedFor($resource) && $this->isNotExclusive();
     } 
-
-    /**
-     * Determine if the field is required for the given resources.
-     * 
-     * @param  \Laravel\Nova\Resource $resource 
-     * @return boolean             
-     */
-    public function isRequiredFor(Resource $resource)
-    {
-        return boolval($this->config('required.'. $resource::uriKey()));  
-    }  
-
-    /**
-     * Determine if the field is required for the given resources.
-     * 
-     * @param  \Laravel\Nova\Resource $resource 
-     * @return boolean             
-     */
-    public function isOptionalFor(Resource $resource)
-    {
-        return ! $this->isRequiredFor($required);
-    } 
-
-    /**
-     * Determine if the field is only available for some resources.
-     *  
-     * @return boolean             
-     */
-    public function isExclusive()
-    {
-        return collect($this->config('only'))->filter()->isNotEmpty(); 
-    } 
-
-    /**
-     * Determine if the field is available for every resources.
-     *  
-     * @return boolean             
-     */
-    public function isNotExclusive()
-    {
-        return ! $this->isExclusive(); 
-    } 
-
-    /**
-     * Determine if the field is only available for the given resources.
-     * 
-     * @param  \Laravel\Nova\Resource $resource 
-     * @return boolean             
-     */
-    public function isExclusiveFor(Resource $resource)
-    {
-        return boolval($this->config('only.'. $resource::uriKey())); 
-    } 
-
-    /**
-     * Determine if the field is excluded for the given resources.
-     * 
-     * @param  \Laravel\Nova\Resource $resource 
-     * @return boolean             
-     */
-    public function isExcludedFor(Resource $resource)
-    {
-        return boolval($this->config('except.'. $resource::uriKey()));
-    }
-
-    /**
-     * Determine if the field is not excluded for the given resources.
-     * 
-     * @param  \Laravel\Nova\Resource $resource 
-     * @return boolean             
-     */
-    public function isNotExcludedFor(Resource $resource)
-    {
-        return ! $this->isExcludedFor($resource);
-    }  
 
     /**
      * Handle dynamic method calls into the model.
@@ -214,7 +128,7 @@ class Detail extends Model
      */
     public function __call($method, $parameters)
     { 
-        $resource = Details::moreDetailedResources(request())->first(function($resource) use ($method) {
+        $resource = static::sharedResources(request())->first(function($resource) use ($method) {
             return Str::plural(Str::camel($resource::uriKey())) === $method;
         });
 
@@ -223,5 +137,27 @@ class Detail extends Model
         }
 
         return parent::__call($method, $parameters);
-    }
+    } 
+
+    /**
+     * Get the sharing contracts interface.
+     *  
+     * @return string            
+     */
+    public static function sharingContract(): string
+    {
+        return \Zareismail\Details\Contracts\MoreDetails::class;
+    } 
+
+    /**
+     * Determine share condition.
+     * 
+     * @param  \Laravel\Nova\Resource $resource
+     * @param  string $condition 
+     * @return bool            
+     */
+    public function sharedAs(Resource $resource, string $condition): bool
+    {
+        return boolval($this->config($condition.'.'.$resource::uriKey()));
+    } 
 }
