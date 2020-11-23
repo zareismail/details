@@ -156,7 +156,7 @@ class Detail extends Model
      * @param  string $condition 
      * @return bool            
      */
-    public function sharedAs(Resource $resource, string $condition): bool
+    public function sharedAs($resource, string $condition): bool
     {
         return boolval($this->config($condition.'.'.$resource::uriKey()));
     } 
