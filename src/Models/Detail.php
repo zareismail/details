@@ -158,6 +158,6 @@ class Detail extends Model
      */
     public function sharedAs($resource, string $condition): bool
     {
-        return boolval($this->config($condition.'.'.$resource::uriKey()));
+        return boolval($this->getConfig($condition.'.'.$resource::uriKey()));
     } 
 }
