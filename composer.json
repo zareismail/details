@@ -11,7 +11,7 @@
         "armincms/chain": "~0.1",
         "armincms/nova-targomaan": "~0.1",
         "superlatif/nova-tag-input": "^1.4",
-        "zareismail/nova-contracts": "*"
+        "zareismail/nova-contracts": "~0.1"
     },
     "autoload": {
         "psr-4": {
