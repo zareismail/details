@@ -4,7 +4,7 @@ namespace Zareismail\Details\Models;
 
 use Illuminate\Support\Str;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\{Text, Number, Select, Boolean, DateTime, Timezone, BooleanGroup}; 
+use Laravel\Nova\Fields\{File, Text, Number, Select, Boolean, DateTime, Timezone, BooleanGroup}; 
 use Zareismail\NovaContracts\Concerns\ShareableResource; 
 
 class Detail extends Model
@@ -60,6 +60,7 @@ class Detail extends Model
     {
         return [
             'Text',
+            'File',
             'Number',
             'Select',
             'Boolean',
@@ -95,6 +96,14 @@ class Detail extends Model
 
             if(method_exists($field, 'options')) {
                 $field->options(array_combine($this->options, $this->options));
+            }
+
+            if(method_exists($field, 'download')) {
+                $field->download(function($request, $resource, $disk, $path) use ($field) { 
+                    $detail = $resource->details->find($this);
+                    
+                    return \Storage::disk($disk)->download(data_get($detail, 'pivot.value')); 
+                });
             }
 
             // if(method_exists($field, 'displayUsingLabels')) {
