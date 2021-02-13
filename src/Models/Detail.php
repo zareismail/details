@@ -4,7 +4,7 @@ namespace Zareismail\Details\Models;
 
 use Illuminate\Support\Str;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\{File, Text, Number, Select, Boolean, DateTime, Timezone, BooleanGroup}; 
+use Laravel\Nova\Fields\{File, Text, Number, Select, Boolean, Date, DateTime, Timezone, BooleanGroup}; 
 use Zareismail\NovaContracts\Concerns\ShareableResource; 
 
 class Detail extends Model
@@ -64,6 +64,7 @@ class Detail extends Model
             'Number',
             'Select',
             'Boolean',
+            'Date',
             'DateTime',
             'Timezone',
             'BooleanGroup' 
