@@ -55,6 +55,11 @@ class Detail extends Resource
                     ->help(__('Help users to fill the field.')),
             ]),
 
+            Number::make(__('Display Order'), 'config->order') 
+                ->required()
+                ->rules('required')
+                ->default(static::newModel()->count() + 1),
+
             Chain::with('detail-field', function($request) {   
                 if(in_array($request->get('field'), ['Select', 'BooleanGroup'])) {
                     return $this->filter([ 

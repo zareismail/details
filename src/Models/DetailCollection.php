@@ -26,6 +26,16 @@ class DetailCollection extends Collection
      */
     public function forResource(Resource $resource)
     { 
-        return $this->filter->isAvailableFor($resource);
+        return $this->filter->isAvailableFor($resource)->sorted()->values();
+    } 
+
+    /**
+     * Sort items by the order value.
+     * 
+     * @return $this            
+     */
+    public function sorted()
+    {
+        return $this->sortByDesc('config.order')->values();
     }
 }

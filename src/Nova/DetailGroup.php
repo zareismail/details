@@ -3,7 +3,7 @@
 namespace Zareismail\Details\Nova; 
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\{ID, Text, HasMany};
+use Laravel\Nova\Fields\{ID, Text, Number, HasMany};
 use Armincms\Fields\Targomaan;
 
 class DetailGroup extends Resource
@@ -30,6 +30,11 @@ class DetailGroup extends Resource
                 Text::make(__('Group Name'), 'name')
                     ->help(__('Display name of the group.')),
             ]),
+
+            Number::make(__('Display Order'), 'order')
+                ->required()
+                ->rules('required')
+                ->default(static::newModel()->count() + 1),
 
             HasMany::make(__('Details'), 'details', Detail::class),
     	];
